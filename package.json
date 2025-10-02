@@ -1,0 +1,68 @@
+{
+  "name": "@niivue/itkwasm-loader",
+  "private": false,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/loader.js"
+    }
+  },
+  "files": [
+    "src/*",
+    "build/*"
+  ],
+  "keywords": [
+    "nii",
+    "itk",
+    "itkwasm",
+    "loader",
+    "niivue",
+    "aim",
+    "isq",
+    "biorad",
+    "bmp",
+    "hdf5",
+    "jpeg",
+    "gipl",
+    "lsm",
+    "metaimage",
+    "mgh",
+    "minc",
+    "mrc",
+    "nifti",
+    "nrrd",
+    "vtk",
+    "fdf",
+    "byu",
+    "freesurfer",
+    "off",
+    "stl",
+    "swc",
+    "obj"
+  ],
+  "author": "NiiVue developers",
+  "license": "BSD-2-Clause",
+  "description": "An loader based on ITK-Wasm image and mesh IO to be used with the NiiVue useLoader method",
+  "scripts": {
+    "cli": "node ./build/itkwasm2nii.js ./tests/testData/monu1.vox",
+    "dev": "vite",
+    "build:demo": "vite build",
+    "build": "esbuild --bundle --format=esm --outfile=./dist/loader.js ./src/lib/loader.ts",
+    "preview": "vite preview",
+    "test": "vitest",
+    "pretty": "prettier --write \"**/*.ts\"",
+    "pub": "npm run build && npm publish --access public"
+  },
+  "dependencies": {
+    "@itk-wasm/image-io": "^3.0.0",
+    "@itk-wasm/mesh-io": "^0.8.0"
+  },
+  "devDependencies": {
+    "@niivue/niivue": "*",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.5.3",
+    "vite": "^6.0.5",
+    "prettier": "*"
+  }
+}
