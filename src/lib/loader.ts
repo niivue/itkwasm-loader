@@ -1,99 +1,204 @@
-import readVox from 'vox-reader'
-import * as nifti from 'nifti-reader-js'
+import { readImage, writeImage } from '@itk-wasm/image-io'
+import { readMesh, writeMesh } from '@itk-wasm/mesh-io'
+// @ts-ignore - No type definitions available
+import { iwm2mesh } from '@niivue/cbor-loader'
 
-interface VoxXYZI {
-  x: number
-  y: number
-  z: number
-  i: number
+/**
+ * Niivue interface for type safety
+ */
+interface Niivue {
+  useLoader(loader: unknown, fileExt: string, toExt: string): void
 }
 
-interface VoxColor {
-  r: number
-  g: number
-  b: number
-  a: number
+/**
+ * Image loader result interface
+ */
+interface ImageLoaderResult {
+  arrayBuffer?: ArrayBuffer
 }
 
-interface VoxData {
-  size: {
-    x: number
-    y: number
-    z: number
+/**
+ * Mesh loader result interface
+ */
+interface MeshLoaderResult {
+  positions: Float32Array
+  indices: Uint32Array
+}
+
+/**
+ * Supported image file extensions that ITK-Wasm can read but aren't fully supported by NiiVue
+ */
+const imageExtensions = [
+  'bmp',
+  'gipl',
+  'gipl.gz',
+  'hdf5',
+  'lsm',
+  'mnc',
+  'mnc.gz',
+  'mnc2',
+  'mgh',
+  'mgz',
+  'mgh.gz',
+  'mha',
+  'mhd',
+  'mrc',
+  'nia',
+  'hdr',
+  'pic',
+  'tif',
+  'tiff',
+  'isq',
+  'aim',
+  'fdf'
+]
+
+/**
+ * All ITK-Wasm supported image extensions
+ */
+const allImageExtensions = [...imageExtensions, 'dcm', 'jpg', 'jpeg', 'nii', 'nii.gz', 'nrrd', 'nhdr', 'png', 'vtk']
+
+/**
+ * Supported mesh file extensions that ITK-Wasm can read but aren't fully supported by NiiVue
+ */
+const meshExtensions = ['byu', 'fsa', 'fsb', 'obj', 'off', 'swc']
+
+/**
+ * All ITK-Wasm supported mesh extensions
+ */
+const allMeshExtensions = [...meshExtensions, 'stl', 'vtk']
+
+/**
+ * Helper function to get file extension from filename
+ */
+function getFileExtension(filename: string): string {
+  const parts = filename.toLowerCase().split('.')
+
+  // Handle compound extensions like .nii.gz, .iwi.cbor
+  if (parts.length >= 3) {
+    const compound = `${parts[parts.length - 2]}.${parts[parts.length - 1]}`
+    // Check if it's a known compound extension
+    if (
+      ['nii.gz', 'gipl.gz', 'mnc.gz', 'mgh.gz', 'iwi.cbor', 'iwm.cbor', 'iwi.cbor.zst', 'iwm.cbor.zst'].includes(
+        compound
+      )
+    ) {
+      return compound
+    }
   }
-  xyzi?: {
-    values: VoxXYZI[]
+
+  return parts[parts.length - 1]
+}
+
+/**
+ * Helper function to convert File to ArrayBuffer
+ */
+async function fileToArrayBuffer(file: File | ArrayBuffer): Promise<ArrayBuffer> {
+  if (file instanceof ArrayBuffer) {
+    return file
   }
-  rgba?: {
-    values: VoxColor[]
+  return await file.arrayBuffer()
+}
+
+/**
+ * Image loader function that converts ITK-Wasm supported formats to NIfTI
+ */
+async function itkImageLoader(file: File | ArrayBuffer): Promise<ArrayBuffer> {
+  const arrayBuffer = await fileToArrayBuffer(file)
+
+  // Create a BinaryFile-like object for ITK-Wasm
+  const binaryFile = {
+    data: new Uint8Array(arrayBuffer),
+    path: 'input'
+  }
+
+  // Read the image using ITK-Wasm
+  const { image } = await readImage(binaryFile as any)
+
+  // Convert to NIfTI format using ITK-Wasm
+  const { serializedImage } = await writeImage(image, 'output.nii')
+
+  return serializedImage.data.buffer as ArrayBuffer
+}
+
+/**
+ * Mesh loader function that converts ITK-Wasm supported formats to MZ3-compatible format
+ */
+async function itkMeshLoader(file: File | ArrayBuffer): Promise<MeshLoaderResult> {
+  const arrayBuffer = await fileToArrayBuffer(file)
+
+  // Create a BinaryFile-like object for ITK-Wasm
+  const binaryFile = {
+    data: new Uint8Array(arrayBuffer),
+    path: 'input'
+  }
+
+  // Read the mesh using ITK-Wasm
+  const { mesh } = await readMesh(binaryFile as any)
+
+  // Convert to IWM format first
+  const { serializedMesh } = await writeMesh(mesh, 'output.iwm.cbor')
+
+  // Then convert IWM to mesh format that NiiVue can use
+  const { positions, indices } = iwm2mesh(serializedMesh.data.buffer)
+
+  return {
+    positions,
+    indices
   }
 }
 
-export async function vox2nii(inBuffer: ArrayBuffer | Uint8Array, isVerbose = true): Promise<Uint8Array> {
-  try {
-    // Ensure the data is a Uint8Array for vox-reader
-    let byteArray: Uint8Array
-    if (inBuffer instanceof Uint8Array) {
-      byteArray = inBuffer
-    } else if (inBuffer instanceof ArrayBuffer) {
-      byteArray = new Uint8Array(inBuffer)
-    } else {
-      throw new Error('Unsupported input type: Expected Uint8Array or ArrayBuffer.')
-    }
+/**
+ * Register image loaders for formats not fully supported by NiiVue
+ * @param nv - NiiVue instance
+ */
+export function useItkWasmLoaders(nv: Niivue): void {
+  // Register image loaders
+  for (const ext of imageExtensions) {
+    nv.useLoader(itkImageLoader, ext, 'nii')
+  }
 
-    console.log('here')
-    // Parse the .vox file
-    // @ts-expect-error - Buffer is an instance of Uint8Array
-    const vox: VoxData = readVox(byteArray)
-    if (!vox || !vox.size || !vox.xyzi?.values || !vox.rgba?.values) {
-      throw new Error('Invalid or empty MagicaVoxel file.')
-    }
-    const { x: width, y: height, z: depth } = vox.size
+  // Register mesh loaders
+  for (const ext of meshExtensions) {
+    nv.useLoader(itkMeshLoader, ext, 'mz3')
+  }
+}
 
-    if (isVerbose) {
-      console.log(`Loaded MagicaVoxel: ${width}x${height}x${depth}`)
-    }
+/**
+ * Register loaders for all ITK-Wasm supported formats
+ * This will override some NiiVue built-in loaders with ITK-Wasm versions
+ * @param nv - NiiVue instance
+ */
+export function useAllItkWasmLoaders(nv: Niivue): void {
+  // Register all image loaders
+  for (const ext of allImageExtensions) {
+    nv.useLoader(itkImageLoader, ext, 'nii')
+  }
 
-    // RGBA in NIfTI requires 4 bytes per voxel
-    const voxelData = new Uint8Array(width * height * depth * 4).fill(0)
+  // Register all mesh loaders
+  for (const ext of allMeshExtensions) {
+    nv.useLoader(itkMeshLoader, ext, 'mz3')
+  }
+}
 
-    // Convert MagicaVoxel color indices to RGBA
-    for (const voxel of vox.xyzi.values) {
-      const { x, y, z, i } = voxel
-      const color = vox.rgba.values[i] // Lookup RGBA palette entry
-      if (color) {
-        const index = (x + y * width + z * width * height) * 4
-        voxelData[index] = color.r // Red
-        voxelData[index + 1] = color.g // Green
-        voxelData[index + 2] = color.b // Blue
-        voxelData[index + 3] = color.a // Alpha
-      }
-    }
+/**
+ * Create a custom image loader for a specific format
+ * @param extension - File extension to handle
+ * @returns Loader function
+ */
+export function createImageLoader(extension: string) {
+  return async (file: File | ArrayBuffer): Promise<ArrayBuffer> => {
+    return await itkImageLoader(file)
+  }
+}
 
-    const hdr = new nifti.NIFTI1()
-    hdr.littleEndian = true
-    hdr.dims[0] = 3 // number of dimensions
-    hdr.dims[1] = width
-    hdr.dims[2] = height
-    hdr.dims[3] = depth
-    hdr.datatypeCode = 2304 // DT_RGBA32
-    hdr.numBitsPerVoxel = 32
-    hdr.pixDims = [1, 1, 1, 1, 1, 0, 0, 0]
-    hdr.vox_offset = 352
-    hdr.scl_slope = 1
-    hdr.scl_inter = 0
-    hdr.qform_code = 0
-    hdr.sform_code = 0
-    hdr.magic = 'n+1'
-
-    const hdrBuffer = hdr.toArrayBuffer()
-
-    const niftiData = new Uint8Array(hdrBuffer.byteLength + voxelData.byteLength)
-    niftiData.set(new Uint8Array(hdrBuffer), 0)
-    niftiData.set(voxelData, hdrBuffer.byteLength)
-
-    return niftiData
-  } catch (error) {
-    throw error
+/**
+ * Create a custom mesh loader for a specific format
+ * @param extension - File extension to handle
+ * @returns Loader function
+ */
+export function createMeshLoader(extension: string) {
+  return async (file: File | ArrayBuffer): Promise<MeshLoaderResult> => {
+    return await itkMeshLoader(file)
   }
 }
