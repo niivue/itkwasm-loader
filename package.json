@@ -55,8 +55,8 @@
     "pub": "npm run build && npm publish --access public"
   },
   "dependencies": {
-    "@itk-wasm/image-io": "^3.0.0",
-    "@itk-wasm/mesh-io": "^0.8.0"
+    "@itk-wasm/image-io": "^1.6.0",
+    "@itk-wasm/mesh-io": "^1.7.0"
   },
   "devDependencies": {
     "@niivue/niivue": "*",

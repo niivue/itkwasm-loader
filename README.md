@@ -1,6 +1,6 @@
 # itkwasm-loader
 
-The itkwasm-loader is a [NiiVue] plugin that converts [ITK-Wasm image IO-supported volumes](https://wasm.itk.org/docs/image-file-formats-url-todo) into NIfTI volumes and [ITK-Wasm mesh IO-supported meshes](https://wasm.itk.org/docs/mesh-file-formats-url-todo) into MZ3 meshes. It uses the [@itkwasm/image-io](https://www.npmjs.com/package/@itkwasm/image-io) and [@itkwasm/mesh-io](https://www.npmjs.com/package/@itkwasm/image-io) libraries.
+The itkwasm-loader is a [NiiVue] plugin that converts [ITK-Wasm image IO-supported volumes](https://wasm.itk.org/docs/image-file-formats-url-todo) into NIfTI volumes and [ITK-Wasm mesh IO-supported meshes](https://wasm.itk.org/docs/mesh-file-formats-url-todo) into MZ3 meshes. It uses the [@itk-wasm/image-io](https://www.npmjs.com/package/@itk-wasm/image-io) and [@itk-wasm/mesh-io](https://www.npmjs.com/package/@itk-wasm/mesh-io) libraries.
 
 ![Example image todo](monument.jpg)
 
