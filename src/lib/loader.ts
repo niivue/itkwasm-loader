@@ -103,13 +103,13 @@ async function fileToArrayBuffer(file: File | ArrayBuffer): Promise<ArrayBuffer>
 /**
  * Image loader function that converts ITK-Wasm supported formats to NIfTI
  */
-async function itkImageLoader(file: File | ArrayBuffer): Promise<ArrayBuffer> {
+async function itkImageLoader(file: File | ArrayBuffer, ext: string): Promise<ArrayBuffer> {
   const arrayBuffer = await fileToArrayBuffer(file)
 
   // Create a BinaryFile-like object for ITK-Wasm
   const binaryFile = {
     data: new Uint8Array(arrayBuffer),
-    path: 'input'
+    path: `input.${ext}`
   }
 
   // Read the image using ITK-Wasm
@@ -124,13 +124,13 @@ async function itkImageLoader(file: File | ArrayBuffer): Promise<ArrayBuffer> {
 /**
  * Mesh loader function that converts ITK-Wasm supported formats to MZ3-compatible format
  */
-async function itkMeshLoader(file: File | ArrayBuffer): Promise<MeshLoaderResult> {
+async function itkMeshLoader(file: File | ArrayBuffer, ext: string): Promise<MeshLoaderResult> {
   const arrayBuffer = await fileToArrayBuffer(file)
 
   // Create a BinaryFile-like object for ITK-Wasm
   const binaryFile = {
     data: new Uint8Array(arrayBuffer),
-    path: 'input'
+    path: `input.${ext}`
   }
 
   // Read the mesh using ITK-Wasm
@@ -155,12 +155,12 @@ async function itkMeshLoader(file: File | ArrayBuffer): Promise<MeshLoaderResult
 export function useItkWasmLoaders(nv: Niivue): void {
   // Register image loaders
   for (const ext of imageExtensions) {
-    nv.useLoader(itkImageLoader, ext, 'nii')
+    nv.useLoader(createImageLoader(ext), ext, 'nii')
   }
 
   // Register mesh loaders
   for (const ext of meshExtensions) {
-    nv.useLoader(itkMeshLoader, ext, 'mz3')
+    nv.useLoader(createMeshLoader(ext), ext, 'mz3')
   }
 }
 
@@ -172,12 +172,12 @@ export function useItkWasmLoaders(nv: Niivue): void {
 export function useAllItkWasmLoaders(nv: Niivue): void {
   // Register all image loaders
   for (const ext of allImageExtensions) {
-    nv.useLoader(itkImageLoader, ext, 'nii')
+    nv.useLoader(createImageLoader(ext), ext, 'nii')
   }
 
   // Register all mesh loaders
   for (const ext of allMeshExtensions) {
-    nv.useLoader(itkMeshLoader, ext, 'mz3')
+    nv.useLoader(createMeshLoader(ext), ext, 'mz3')
   }
 }
 
@@ -188,7 +188,7 @@ export function useAllItkWasmLoaders(nv: Niivue): void {
  */
 export function createImageLoader(extension: string) {
   return async (file: File | ArrayBuffer): Promise<ArrayBuffer> => {
-    return await itkImageLoader(file)
+    return await itkImageLoader(file, extension)
   }
 }
 
@@ -199,6 +199,6 @@ export function createImageLoader(extension: string) {
  */
 export function createMeshLoader(extension: string) {
   return async (file: File | ArrayBuffer): Promise<MeshLoaderResult> => {
-    return await itkMeshLoader(file)
+    return await itkMeshLoader(file, extension)
   }
 }
