@@ -59,10 +59,10 @@
     "@itk-wasm/mesh-io": "^1.7.0"
   },
   "devDependencies": {
-    "@niivue/niivue": "*",
-    "esbuild": "^0.25.0",
-    "typescript": "^5.5.3",
-    "vite": "^6.0.5",
-    "prettier": "*"
+    "@niivue/niivue": "^0.62.1",
+    "esbuild": "^0.25.10",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vite": "^6.3.6"
   }
 }
