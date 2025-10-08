@@ -57,4 +57,4 @@ npm run dev
 
 ## Alternative libraries
 
-See also the [built-in NiiVue format support](https://link-todo), [NiiVue ITK-Wasm cbor-loader](https://link-todo), which support ITK-Wasm's native CBOR format, [other NiiVue loaders](https://link-todo), and the [NiiVue plugin documentation](https://link-todo).
+See also the [built-in NiiVue format support](https://niivue.com/docs/loading#supported-formats), [NiiVue ITK-Wasm cbor-loader](https://github.com/niivue/cbor-loader), which support ITK-Wasm's native CBOR format and in-memory [interface types](https://docs.itk.org/projects/wasm/en/latest/typescript/interface_types/index.html), [other NiiVue loaders and the NiiVue plugin documentation](https://niivue.com/docs/plugins).
