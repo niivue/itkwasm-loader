@@ -13,9 +13,16 @@ export async function setupNiivue(element: HTMLCanvasElement) {
       url: '/LIDC2.mha'
     }
   ])
-  await nv.loadMeshes([
-    {
-      url: '/cow.vtk'
-    }
-  ])
+
+  // await nv.loadMeshes([
+  //   {
+  //     url: '/cow.vtk'
+  //   }
+  // ])
+
+  // await nv.loadMeshes([
+  //   {
+  //     url: '/cow.vtk'
+  //   }
+  // ])
 }

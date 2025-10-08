@@ -4,9 +4,9 @@
 
 The itkwasm-loader is a [NiiVue](https://niivue.com/) plugin that converts [ITK-Wasm image IO-supported volumes]( https://docs.itk.org/projects/wasm/en/latest/introduction/file_formats/images.html) into NIfTI volumes and [ITK-Wasm mesh IO-supported meshes](https://docs.itk.org/projects/wasm/en/latest/introduction/file_formats/meshes.html) into MZ3 meshes. It uses the [@itk-wasm/image-io](https://www.npmjs.com/package/@itk-wasm/image-io) and [@itk-wasm/mesh-io](https://www.npmjs.com/package/@itk-wasm/mesh-io) libraries.
 
-![Example image todo](monument.jpg)
+![Example image](./image-example.png)
 
-![Example mesh todo](monument.jpg)
+![Example mesh](./mesh-example.png)
 
 ## Installation
 
@@ -29,6 +29,20 @@ useItkWasmLoaders(nv)
 This will add support for volume and mesh file formats not fully supported by default in NiiVue. To add support for all ITK-Wasm supported formats, call `useAllItkWasmLoaders` instead of `useItkWasmLoaders`.
 
 See also the [NiiVue loader documentation](https://link-todo).
+
+## Vite Configuration
+
+If you are using Vite, you may need to add the following to your `vite.config.js`:
+
+```javascript
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  optimizeDeps: {
+    exclude: ["itk-wasm", "@itk-wasm/mesh-io", "@itk-wasm/image-io", "@thewtex/zstddec"],
+  },
+});
+```
 
 ## Local Browser Development
 
