@@ -45,7 +45,6 @@
   "license": "BSD-2-Clause",
   "description": "An loader based on ITK-Wasm image and mesh IO to be used with the NiiVue useLoader method",
   "scripts": {
-    "cli": "node ./build/itkwasm2nii.js ./tests/testData/monu1.vox",
     "dev": "vite",
     "build:demo": "vite build",
     "build": "esbuild --bundle --format=esm --outfile=./dist/loader.js ./src/lib/loader.ts",
