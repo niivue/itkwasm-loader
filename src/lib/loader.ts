@@ -29,7 +29,7 @@ interface MeshLoaderResult {
 /**
  * Supported image file extensions that ITK-Wasm can read but aren't fully supported by NiiVue
  */
-const imageExtensions = [
+export const imageExtensions = [
   'bmp',
   'gipl',
   'gipl.gz',
@@ -57,17 +57,28 @@ const imageExtensions = [
 /**
  * All ITK-Wasm supported image extensions
  */
-const allImageExtensions = [...imageExtensions, 'dcm', 'jpg', 'jpeg', 'nii', 'nii.gz', 'nrrd', 'nhdr', 'png', 'vtk']
+export const allImageExtensions = [
+  ...imageExtensions,
+  'dcm',
+  'jpg',
+  'jpeg',
+  'nii',
+  'nii.gz',
+  'nrrd',
+  'nhdr',
+  'png',
+  'vtk'
+]
 
 /**
  * Supported mesh file extensions that ITK-Wasm can read but aren't fully supported by NiiVue
  */
-const meshExtensions = ['byu', 'fsa', 'fsb', 'obj', 'off', 'swc']
+export const meshExtensions = ['byu', 'swc', 'vtk']
 
 /**
  * All ITK-Wasm supported mesh extensions
  */
-const allMeshExtensions = [...meshExtensions, 'stl', 'vtk']
+export const allMeshExtensions = [...meshExtensions, 'fsa', 'fsb', 'obj', 'off', 'stl']
 
 /**
  * Helper function to get file extension from filename
