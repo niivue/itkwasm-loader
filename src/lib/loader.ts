@@ -1,7 +1,8 @@
-import { readImage, writeImage } from '@itk-wasm/image-io'
-import { readMesh, writeMesh } from '@itk-wasm/mesh-io'
+import { readImage } from '@itk-wasm/image-io'
+import { readMesh } from '@itk-wasm/mesh-io'
+import { type BinaryFile } from 'itk-wasm'
 // @ts-ignore - No type definitions available
-import { iwm2mesh } from '@niivue/cbor-loader'
+import { iwm2meshCore, iwi2niiCore } from '@niivue/cbor-loader'
 
 /**
  * Niivue interface for type safety
@@ -113,12 +114,9 @@ async function itkImageLoader(file: File | ArrayBuffer, ext: string): Promise<Ar
   }
 
   // Read the image using ITK-Wasm
-  const { image } = await readImage(binaryFile as any)
+  const { image } = await readImage(binaryFile as BinaryFile)
 
-  // Convert to NIfTI format using ITK-Wasm
-  const { serializedImage } = await writeImage(image, 'output.nii')
-
-  return serializedImage.data.buffer as ArrayBuffer
+  return iwi2niiCore(image)
 }
 
 /**
@@ -136,16 +134,10 @@ async function itkMeshLoader(file: File | ArrayBuffer, ext: string): Promise<Mes
   // Read the mesh using ITK-Wasm
   const { mesh } = await readMesh(binaryFile as any)
 
-  // Convert to IWM format first
-  const { serializedMesh } = await writeMesh(mesh, 'output.iwm.cbor')
+  // Convert to MZ3-compatible format using ITK-Wasm
+  const { positions, indices } = iwm2meshCore(mesh)
 
-  // Then convert IWM to mesh format that NiiVue can use
-  const { positions, indices } = iwm2mesh(serializedMesh.data.buffer)
-
-  return {
-    positions,
-    indices
-  }
+  return { positions, indices }
 }
 
 /**
