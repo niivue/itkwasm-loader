@@ -8,11 +8,11 @@ export async function setupNiivue(element: HTMLCanvasElement) {
   // useItkWasmLoaders(nv)
   useAllItkWasmLoaders(nv)
 
-  await nv.loadImages([
-    {
-      url: '/LIDC2.mha'
-    }
-  ])
+  // await nv.loadImages([
+  //   {
+  //     url: '/LIDC2.mha'
+  //   }
+  // ])
 
   // await nv.loadMeshes([
   //   {
@@ -22,7 +22,7 @@ export async function setupNiivue(element: HTMLCanvasElement) {
 
   // await nv.loadMeshes([
   //   {
-  //     url: '/cow.vtk'
+  //     url: '/rac.vtk'
   //   }
   // ])
 }
