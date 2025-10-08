@@ -13,6 +13,10 @@
     "src/*",
     "build/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niivue/itkwasm-loader.git"
+  },
   "keywords": [
     "nii",
     "itk",
