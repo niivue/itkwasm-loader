@@ -1,7 +1,5 @@
 # itkwasm-loader
 
-## WARNING: This package is a Work in Progress (WIP)
-
 The itkwasm-loader is a [NiiVue](https://niivue.com/) plugin that converts [ITK-Wasm image IO-supported volumes]( https://docs.itk.org/projects/wasm/en/latest/introduction/file_formats/images.html) into NIfTI volumes and [ITK-Wasm mesh IO-supported meshes](https://docs.itk.org/projects/wasm/en/latest/introduction/file_formats/meshes.html) into MZ3 meshes. It uses the [@itk-wasm/image-io](https://www.npmjs.com/package/@itk-wasm/image-io) and [@itk-wasm/mesh-io](https://www.npmjs.com/package/@itk-wasm/mesh-io) libraries.
 
 ![Example image](./image-example.png)
