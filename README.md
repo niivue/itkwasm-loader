@@ -14,6 +14,8 @@ npm install @niivue/itkwasm-loader
 
 ## Usage
 
+### Quick Start
+
 ```javascript
 import { Niivue } from '@niivue/niivue'
 import { useItkWasmLoaders } from '@niivue/itkwasm-loader'
@@ -25,6 +27,26 @@ useItkWasmLoaders(nv)
 ```
 
 This will add support for volume and mesh file formats not fully supported by default in NiiVue. To add support for all ITK-Wasm supported formats, call `useAllItkWasmLoaders` instead of `useItkWasmLoaders`.
+
+### Custom Loaders
+
+You can also create custom loaders for specific file formats using `createImageLoader` and `createMeshLoader`:
+
+```javascript
+import { Niivue } from '@niivue/niivue'
+import { createImageLoader, createMeshLoader } from '@niivue/itkwasm-loader'
+
+const nv = new Niivue()
+await nv.attachToCanvas(document.getElementById('niivue-canvas'))
+
+// Register a custom loader for TIFF images
+nv.useLoader(createImageLoader('tif'), 'tif', 'nii')
+
+// Register a custom loader for VTK meshes
+nv.useLoader(createMeshLoader('vtk'), 'vtk', 'mz3')
+```
+
+This approach gives you fine-grained control over which formats to support and allows you to selectively register loaders for specific extensions.
 
 See also the [NiiVue loader documentation](https://link-todo).
 
