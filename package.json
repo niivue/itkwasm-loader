@@ -52,7 +52,8 @@
   "scripts": {
     "dev": "vite",
     "build:demo": "vite build",
-    "build": "esbuild --bundle --format=esm --outfile=./dist/loader.js ./src/lib/loader.ts",
+    "copy:web-workers": "shx mkdir -p ./dist/web-workers/ && shx cp ./node_modules/itk-wasm/dist/pipeline/web-workers/bundles/*.js ./dist/web-workers/",
+    "build": "npm run copy:web-workers && esbuild --bundle --format=esm --outfile=./dist/loader.js ./src/lib/loader.ts",
     "preview": "vite preview",
     "test": "vitest",
     "pretty": "prettier --write \"**/*.ts\"",
@@ -67,6 +68,7 @@
     "@niivue/niivue": "^0.62.1",
     "esbuild": "^0.25.10",
     "prettier": "^3.6.2",
+    "shx": "^0.4.0",
     "typescript": "^5.9.3",
     "vite": "^6.3.6"
   }
